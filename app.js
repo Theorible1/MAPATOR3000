@@ -27,9 +27,9 @@ const couleurEquipe = e => MV_COULEUR_EQUIPE[e] || "var(--accent)";
 const pastille = c => `<span class="pastille" style="background:${esc(c)}"></span>`;
 const qui = id => `<span class="nom">${pastille(COUL[id] || "var(--accent)")}${esc(NOM[id] || id)}</span>`;
 
-// Titre de bloc : nom en gros, précision en petit, « i » qui ouvre une bulle d'explication.
-function titre(texte, detail, info) {
-  return esc(texte) + (detail ? ` <small class="glose">(${esc(detail)})</small>` : "")
+// Titre de bloc : icône (dessins de Quentin, page\images\ic_*.webp), nom en gros, précision en petit, « i » qui ouvre une bulle.
+function titre(texte, detail, info, ico) {
+  return (ico ? `<img class="ico" src="images/ic_${ico}.webp" alt="" width="24" height="24">` : "") + esc(texte) +(detail ? ` <small class="glose">(${esc(detail)})</small>` : "")
     + (info ? ` <span class="info" tabindex="0" role="note" aria-label="${esc(info)}" data-info="${esc(info)}">i</span>` : "");
 }
 function placerBulle(ev) {
@@ -154,6 +154,22 @@ function graphique(etiquettes, series, { f = "0.0", infoLigne = "" } = {}) {
 
 // ───────────── onglet « Résumé » (page Jeu en cours du tableur) ─────────────
 
+// Podium à 4 marches (badges dessinés par Quentin) : les marches suivent les vrais rangs jusqu'au 4e ; à égalité, les joueurs
+// partagent une marche (même règle que la page Deathlist). lignes : [{rang, id}] ; valeur : texte affiché sous le nom.
+const PLACES = ["1re place", "2e place", "3e place", "4e place"];
+function podium(lignes, valeur) {
+  const rangs = [...new Set(lignes.map(l => l.rang))].filter(r => r >= 1 && r <= 4).sort((a, b) => a - b);
+  if (!rangs.length) return "";
+  const marches = rangs.map(r => lignes.filter(l => l.rang === r));
+  return `<div class="podium" style="grid-template-columns:repeat(${marches.length},minmax(0,1fr))">${marches.map((ls, i) => {
+    const r = ls[0].rang;
+    return `<div class="marche r${i + 1}"><div class="med"><img src="images/podium_${r}.webp" alt="${PLACES[r - 1]}" loading="lazy"></div>
+      <div class="qui">${ls.map(l => esc(NOM[l.id] || l.id)).join(", ")}</div>
+      <div class="combien">${r}${r === 1 ? "er" : "e"}${ls.length > 1 ? " ex aequo" : ""} · ${valeur(ls[0])}</div></div>`;
+  }).join("")}</div>`;
+}
+const podiumLigne = (ligne, f) => ligne ? podium(ligne.classement.filter(r => r.classe), r => fmt(r.valeur, f)) : "";
+
 function tableClassement(ligne, { colN = false, f = "0" } = {}) {
   if (!ligne || !ligne.classement.length) return `<div class="vide">Personne n'a joué.</div>`;
   return `<table><thead><tr><th>#</th><th>Joueur</th><th class="num">${f === "0" ? "Score" : "Moyenne"}</th>${colN ? `<th class="num">Parties</th>` : ""}</tr></thead><tbody>
@@ -180,27 +196,28 @@ function vueResume() {
   const ordreMed = Object.keys(R.total).sort((a, b) => R.total[b][3] - R.total[a][3] || R.total[b][0] - R.total[a][0]);
   const med = v => v[0] + v[1] + v[2] ? `🥇${v[0]} 🥈${v[1]} 🥉${v[2]}` : "–";
   return `
-  <section class="carte"><h2>${titre("Sororité vs Fraternité", "le match des équipes", "Moyenne d'équipe = moyenne de toutes les parties des joueurs de l'équipe. Une équipe gagne un jour, une semaine ou un mois terminé quand sa moyenne est la meilleure.")}</h2>
+  <section class="carte"><h2>${titre("La bataille des hémisphères", "Sororité vs Fraternité", "Moyenne d'équipe = moyenne de toutes les parties des joueurs de l'équipe. Une équipe gagne un jour, une semaine ou un mois terminé quand sa moyenne est la meilleure.", "boussole")}</h2>
     ${e1 && e2 ? `<div class="score-duel"><span style="color:${couleurEquipe(e1)}">${eq[e1].v_jours}</span><small>jours gagnés</small><span style="color:${couleurEquipe(e2)}">${eq[e2].v_jours}</span></div>` : ""}
     <div class="duel">${EQUIPES.map(tuileEquipe).join("")}</div></section>
   <div class="grille">
-    <section class="carte" data-sec="jour"><h2>${titre("Partie du jour", R.jour ? R.jour.libelle : "")}${R.jour ? libEnCours(R.jour) : ""}</h2>${tableClassement(R.jour)}</section>
-    <section class="carte" data-sec="mois"><h2>${titre("Le mois", R.mois ? R.mois.libelle : "", "Classement à la moyenne du mois. " + (R.regles[3] || ""))}${R.mois ? libEnCours(R.mois) : ""}</h2>${tableClassement(R.mois, { colN: true, f: "0.0" })}</section>
+    <section class="carte" data-sec="jour"><h2>${titre("Le point GPS du jour", "partie du " + (R.jour ? R.jour.libelle : ""), "", "repere")}${R.jour ? libEnCours(R.jour) : ""}</h2>${podiumLigne(R.jour, "0")}${tableClassement(R.jour)}</section>
+    <section class="carte" data-sec="mois"><h2>${titre("Le tour du monde en 30 jours", "classement de " + (R.mois ? R.mois.libelle.toLowerCase() : "ce mois"), "Classement à la moyenne du mois. " + (R.regles[3] || ""), "drapeau")}${R.mois ? libEnCours(R.mois) : ""}</h2>${podiumLigne(R.mois, "0.0")}${tableClassement(R.mois, { colN: true, f: "0.0" })}</section>
   </div>
-  <section class="carte" data-sec="general"><h2>${titre("Classement général", "depuis le début", "Rang à la moyenne de toutes les parties. « 30 dernières » = moyenne des 30 dernières parties du joueur.")}</h2>
+  <section class="carte" data-sec="general"><h2>${titre("Le grand atlas", "classement général depuis le début", "Rang à la moyenne de toutes les parties. « 30 dernières » = moyenne des 30 dernières parties du joueur.", "globe")}</h2>
+    ${podium(R.individuel, x => fmt(x.moyenne))}
     <div class="defil"><table><thead><tr><th>#</th><th>Joueur</th><th class="num">Moyenne</th><th class="num">30 dernières</th><th class="num">Meilleur</th><th class="num">Pire</th><th class="num">Parties</th></tr></thead><tbody>
     ${R.individuel.map(x => `<tr><td class="rang">${x.rang}</td><td>${qui(x.id)}</td><td class="num"><b>${fmt(x.moyenne)}</b></td><td class="num">${fmt(x.dernieres)}</td>
       <td class="num">${fmt(x.meilleur, "0")}</td><td class="num">${fmt(x.pire, "0")}</td><td class="num">${x.n}</td></tr>`).join("")}
     </tbody></table></div></section>
-  <section class="carte" data-sec="medailles"><h2>${titre("Médailles", "or 3 points, argent 2, bronze 1", R.regles.join("\n"))}</h2>
+  <section class="carte" data-sec="medailles"><h2>${titre("Les médailles d'or-ientation", "médailles : or 3 points, argent 2, bronze 1", R.regles.join("\n"), "rose")}</h2>
     <div class="defil"><table><thead><tr><th>Joueur</th><th class="num">Points</th><th>Total</th>${etages.map(([, t]) => `<th>${esc(t)}</th>`).join("")}</tr></thead><tbody>
     ${ordreMed.map(id => `<tr><td>${qui(id)}</td><td class="num"><b>${R.total[id][3]}</b></td><td class="med">${med(R.total[id])}</td>
       ${etages.map(([cle]) => `<td class="med">${med(R.medailles[cle][id] || [0, 0, 0])}</td>`).join("")}</tr>`).join("")}
     </tbody></table></div></section>
-  <section class="carte" data-sec="semaines"><h2>${titre("Les dernières semaines", "classement à la moyenne", R.regles[1] || "")}</h2>
-    <div class="grille etroite">${R.semaines.map(s => `<div><h3>${esc(s.libelle.replace(" · en cours", ""))}${libEnCours(s)}</h3>${tableClassement(s, { colN: true, f: "0.0" })}</div>`).join("")}</div></section>
-  <section class="carte" data-sec="jours" data-replie="1"><h2>${titre("Les jours d'avant", "5 derniers jours")}</h2>
-    <div class="grille etroite">${R.jours_avant.map(j => `<div><h3>${esc(j.libelle)}</h3>${tableClassement(j)}</div>`).join("")}</div></section>`;
+  <section class="carte" data-sec="semaines"><h2>${titre("Les dernières escales", "4 dernières semaines terminées, classement à la moyenne", R.regles[1] || "", "carte")}</h2>
+    <div class="grille semaines">${R.semaines.filter(s => !s.en_cours).slice(0, 4).map(s => `<div><h3>Semaine ${esc(s.libelle.replace(/^S0?/, ""))}</h3>${tableClassement(s, { colN: true, f: "0.0" })}</div>`).join("")}</div></section>
+  <section class="carte" data-sec="jours" data-replie="1"><h2>${titre("Le carnet de bord", "les 4 jours d'avant", "", "jumelles")}</h2>
+    <div class="grille semaines">${R.jours_avant.slice(0, 4).map(j => `<div><h3>${esc(j.libelle)}</h3>${tableClassement(j)}</div>`).join("")}</div></section>`;
 }
 
 // ───────────── onglet « Joueurs » ─────────────
@@ -241,17 +258,19 @@ function fiche() {
     <div class="tuile-kpi"><div class="lib">Meilleur / pire</div><div class="val">${ind ? fmt(ind.meilleur, "0") : "–"} <small>/ ${ind ? fmt(ind.pire, "0") : "–"}</small></div></div>
     <div class="tuile-kpi"><div class="lib">Médailles</div><div class="val">${tot[3]} <small>pts</small></div><div class="note">🥇${tot[0]} 🥈${tot[1]} 🥉${tot[2]}</div></div>
   </div>
-  <section class="carte"><h2>${titre("Évolution", "par semaine", "Points : moyenne de chaque semaine. Trait : moyenne glissante sur 4 semaines, calculée sur les parties (comme dans le tableur).")}</h2>
+  <section class="carte"><h2>${titre("La courbe de niveau", "évolution par semaine", "Points : moyenne de chaque semaine. Trait : moyenne glissante sur 4 semaines, calculée sur les parties (comme dans le tableur).", "boussole")}</h2>
     ${ev.vide ? `<div class="vide">${esc(ev.notes.join(" "))}</div>` : graphique(ev.etiquettes, ev.series.map(s => ({ nom: s.nom, couleur: s.couleur, points: s.valeurs, ligne: s.glissante })), { infoLigne: "4 sem." })}</section>
-  <div class="grille">
-    <section class="carte"><h2>${titre("Dernières parties")}</h2><table><thead><tr><th>Date</th><th class="num">Score</th><th class="num">Place du jour</th></tr></thead><tbody>
+  <div class="grille deux">
+    <section class="carte"><h2>${titre("Le journal de bord", "10 dernières parties", "", "repere")}</h2><table><thead><tr><th>Date</th><th class="num">Score</th><th class="num">Place du jour</th></tr></thead><tbody>
       ${miennes.map(m => `<tr><td>${mvLibelleDate(m.d)}</td><td class="num"><b>${m.total}</b></td><td class="num">${m.rang}${m.rang === 1 ? "er" : "e"} sur ${m.nb}</td></tr>`).join("")}</tbody></table></section>
-    <section class="carte"><h2>${titre("Par continent", "", infoIndice)}</h2><table><thead><tr><th>Continent</th><th class="num">Manches</th><th class="num">Moyenne /100</th><th class="num">Indice</th></tr></thead><tbody>
+    <section class="carte"><h2>${titre("Le tour des continents", "résultats par continent", infoIndice, "globe")}</h2><table><thead><tr><th>Continent</th><th class="num">Manches</th><th class="num">Moyenne /100</th><th class="num">Indice</th></tr></thead><tbody>
       ${conts.map(p => `<tr><td>${esc(p.k)}</td><td class="num">${p.n}</td><td class="num">${fmt(p.moy)}</td><td class="num">${fmt(p.indice, "+0.0;-0.0;0.0")}</td></tr>`).join("")}</tbody></table></section>
-    <section class="carte"><h2>${titre("Ses pays forts", "5 meilleurs indices", infoIndice)}</h2>${tPays(pays.slice(0, 5))}</section>
-    <section class="carte"><h2>${titre("Ses pays pièges", "5 moins bons indices", infoIndice)}</h2>${tPays(pays.slice(-5).reverse())}</section>
   </div>
-  <section class="carte"><h2>${titre("Médailles par catégorie")}</h2><table><tbody>
+  <div class="grille deux">
+    <section class="carte"><h2>${titre("Terres conquises", "ses 5 meilleurs pays", infoIndice, "drapeau")}</h2>${tPays(pays.slice(0, 5))}</section>
+    <section class="carte"><h2>${titre("Son triangle des Bermudes", "ses 5 pays pièges", infoIndice, "montagne")}</h2>${tPays(pays.slice(-5).reverse())}</section>
+  </div>
+  <section class="carte"><h2>${titre("Le butin de l'explorateur", "médailles par catégorie", "", "rose")}</h2><table><tbody>
     ${R.etages.map(([cle, t]) => { const v = R.medailles[cle][id] || [0, 0, 0]; return `<tr><td>${esc(t)}</td><td class="med num">🥇${v[0]} 🥈${v[1]} 🥉${v[2]}</td></tr>`; }).join("")}
   </tbody></table></section>`;
 }
@@ -297,10 +316,10 @@ function resultat() {
     const notes = e.notes.length ? `<section class="bandeau att">${e.notes.map(esc).join("<br>")}</section>` : "";
     if (e.vide) { out.innerHTML = notes || `<div class="vide">Rien à afficher.</div>`; return; }
     const glisse = e.critere === "Moyenne";
-    out.innerHTML = notes + `<section class="carte"><h2>${titre(e.titre.replace("Évolution · ", ""), e.periode.titre, glisse
-        ? "Points : " + e.critere.toLowerCase() + " de chaque case. Trait : " + e.fenetreTitre + ", calculée sur les parties (comme dans le tableur)." : "Trait : valeur de chaque case.")}</h2>
+    out.innerHTML = notes + `<section class="carte"><h2>${titre("La courbe de niveau", e.titre.replace("Évolution · ", "").toLowerCase() + ", " + e.periode.titre, glisse
+        ? "Points : " + e.critere.toLowerCase() + " de chaque case. Trait : " + e.fenetreTitre + ", calculée sur les parties (comme dans le tableur)." : "Trait : valeur de chaque case.", "boussole")}</h2>
       ${graphique(e.etiquettes, e.series.map(s => ({ nom: s.nom, couleur: s.couleur, points: glisse ? s.valeurs : s.valeurs.map(() => null), ligne: glisse ? s.glissante : s.valeurs })), { f: e.fmt, infoLigne: glisse ? e.fenetreLib : "" })}</section>
-      <section class="carte"><h2>${titre("Début et fin de période", e.fenetreTitre, "Début = moyenne des premiers jours joués de la période, fin = moyenne des derniers (même durée que la moyenne glissante, réduite si la période est courte).")}</h2>
+      <section class="carte"><h2>${titre("Départ et arrivée", "début et fin de période, " + e.fenetreTitre, "Début = moyenne des premiers jours joués de la période, fin = moyenne des derniers (même durée que la moyenne glissante, réduite si la période est courte).", "carte")}</h2>
       <div class="defil"><table><thead><tr><th>Courbe</th><th class="num">${esc(e.colN)}</th><th class="num">Début</th><th class="num">Fin</th><th class="num">Écart</th></tr></thead><tbody>
       ${e.resume.map((r, i) => `<tr><td><span class="nom">${pastille(e.series[i].couleur)}${esc(r.nom)}</span></td><td class="num">${r.n}</td><td class="num">${fmt(r.debut, e.fmt)}</td><td class="num">${fmt(r.fin, e.fmt)}</td>
         <td class="num ${fini(r.delta) ? (r.delta > 0 ? "evo monte" : r.delta < 0 ? "evo baisse" : "") : ""}">${fmt(r.delta, "+0.0;-0.0;0.0")}</td></tr>`).join("")}
@@ -349,9 +368,9 @@ function afficher() {
   const onglet = location.hash === "#joueur" ? "joueur" : location.hash === "#vue" ? "vue" : "resume";
   document.querySelectorAll("nav.menu a").forEach(a => { if (a.dataset.onglet === onglet) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   const c = document.getElementById("contenu"), t = document.getElementById("titre");
-  if (onglet === "resume") { t.textContent = "Sororité vs Fraternité"; c.innerHTML = vueResume(); appliquerReplis(); }
+  if (onglet === "resume") { t.textContent = "Le QG des explorateurs"; c.innerHTML = vueResume(); appliquerReplis(); }
   else if (onglet === "joueur") {
-    t.textContent = "Fiche joueur"; c.innerHTML = vueJoueur();
+    t.textContent = "Le passeport de chaque joueur"; c.innerHTML = vueJoueur();
     document.getElementById("choix-joueur").addEventListener("change", fiche); fiche();
   } else { t.textContent = "Vue à la carte"; c.innerHTML = vueCarte(); brancherVue(); resultat(); }
 }
