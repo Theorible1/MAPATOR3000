@@ -131,6 +131,21 @@ h2 img.ico{width:24px;height:24px;object-fit:contain;vertical-align:-7px;margin-
 .marche.r2{order:1;padding-top:14px}.marche.r3{order:3;padding-top:8px}.marche.r4{order:4;padding-top:2px}
 @media (max-width:560px){.podium{grid-template-columns:repeat(2,minmax(0,1fr))!important}.marche.r1,.marche.r2,.marche.r3,.marche.r4{padding-top:10px}.marche.r1{order:1}.marche.r2{order:2}.marche.r3{order:3}.marche.r4{order:4}}
 
+/* médailles : une carte par joueur */
+.cartes-med{display:grid;gap:12px;grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1100px){.cartes-med{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.cartes-med{grid-template-columns:minmax(0,1fr)}}
+.carte-med{border:1px solid var(--border);border-radius:var(--rayon);background:var(--surface-2);padding:10px 12px;min-width:0}
+.tete-med{display:flex;align-items:center;gap:8px;font-weight:650}
+.rang-med{min-width:1.6em;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pts-med{margin-left:auto;font-size:20px;font-weight:750;font-variant-numeric:tabular-nums}
+.pts-med small{font-size:12px;color:var(--ink-2);font-weight:600}
+.totaux-med{display:flex;gap:14px;margin:6px 0 8px;font-size:16px;font-weight:650;font-variant-numeric:tabular-nums}
+.carte-med .m{white-space:nowrap}
+table.detail-med{font-size:12px}
+table.detail-med td{padding:3px 4px;color:var(--ink-2)}
+table.detail-med td.num .m{margin-left:8px;color:var(--ink)}
+
 /* bulle « i » */
 h2 .glose,h3 .glose{text-transform:none;font-style:italic;font-weight:400;font-size:12px;letter-spacing:0;color:var(--ink-2);margin-left:4px}
 .info{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;border:1px solid var(--ink-2);color:var(--ink-2);font:italic 700 11px/1 Georgia,serif;text-transform:none;letter-spacing:0;cursor:help;position:relative;vertical-align:1px;margin-left:6px}

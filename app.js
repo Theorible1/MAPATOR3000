@@ -157,6 +157,9 @@ function graphique(etiquettes, series, { f = "0.0", infoLigne = "" } = {}) {
 // Podium à 4 marches (badges dessinés par Quentin) : les marches suivent les vrais rangs jusqu'au 4e ; à égalité, les joueurs
 // partagent une marche (même règle que la page Deathlist). lignes : [{rang, id}] ; valeur : texte affiché sous le nom.
 const PLACES = ["1re place", "2e place", "3e place", "4e place"];
+// Libellés courts des catégories de médailles (clés de jeu_en_cours.ETAGES)
+const COURT_ETAGE = { jour: "Du jour", semaine: "De la semaine", mois: "Du mois", ind_mois: "Indicateurs du mois",
+  indicateurs: "Indicateurs (tout l'historique)", prog_semaine: "Progression de la semaine", prog_mois: "Progression du mois" };
 function podium(lignes, valeur) {
   const rangs = [...new Set(lignes.map(l => l.rang))].filter(r => r >= 1 && r <= 4).sort((a, b) => a - b);
   if (!rangs.length) return "";
@@ -194,7 +197,9 @@ function vueResume() {
   };
   const etages = R.etages.map(([cle, t]) => [cle, t]);
   const ordreMed = Object.keys(R.total).sort((a, b) => R.total[b][3] - R.total[a][3] || R.total[b][0] - R.total[a][0]);
-  const med = v => v[0] + v[1] + v[2] ? `🥇${v[0]} 🥈${v[1]} 🥉${v[2]}` : "–";
+  // rang aux points (égalités au même rang), pour le podium et l'ordre des cartes
+  const rangsMedailles = ordreMed.map(id => ({ id, rang: 1 + ordreMed.filter(j => R.total[j][3] > R.total[id][3]).length }));
+  const trio = v => `<span class="m">🥇&nbsp;${v[0]}</span><span class="m">🥈&nbsp;${v[1]}</span><span class="m">🥉&nbsp;${v[2]}</span>`;
   return `
   <section class="carte"><h2>${titre("La bataille des hémisphères", "Sororité vs Fraternité", "Moyenne d'équipe = moyenne de toutes les parties des joueurs de l'équipe. Une équipe gagne un jour, une semaine ou un mois terminé quand sa moyenne est la meilleure.", "boussole")}</h2>
     ${e1 && e2 ? `<div class="score-duel"><span style="color:${couleurEquipe(e1)}">${eq[e1].v_jours}</span><small>jours gagnés</small><span style="color:${couleurEquipe(e2)}">${eq[e2].v_jours}</span></div>` : ""}
@@ -210,10 +215,15 @@ function vueResume() {
       <td class="num">${fmt(x.meilleur, "0")}</td><td class="num">${fmt(x.pire, "0")}</td><td class="num">${x.n}</td></tr>`).join("")}
     </tbody></table></div></section>
   <section class="carte" data-sec="medailles"><h2>${titre("Les médailles d'or-ientation", "médailles : or 3 points, argent 2, bronze 1", R.regles.join("\n"), "rose")}</h2>
-    <div class="defil"><table><thead><tr><th>Joueur</th><th class="num">Points</th><th>Total</th>${etages.map(([, t]) => `<th>${esc(t)}</th>`).join("")}</tr></thead><tbody>
-    ${ordreMed.map(id => `<tr><td>${qui(id)}</td><td class="num"><b>${R.total[id][3]}</b></td><td class="med">${med(R.total[id])}</td>
-      ${etages.map(([cle]) => `<td class="med">${med(R.medailles[cle][id] || [0, 0, 0])}</td>`).join("")}</tr>`).join("")}
-    </tbody></table></div></section>
+    ${podium(rangsMedailles, x => R.total[x.id][3] + " pts")}
+    <div class="cartes-med">${rangsMedailles.map(x => {
+      const t = R.total[x.id];
+      const lignes = etages.map(([cle]) => [cle, R.medailles[cle][x.id] || [0, 0, 0]]).filter(([, v]) => v[0] + v[1] + v[2]);
+      return `<div class="carte-med"><div class="tete-med"><span class="rang-med">${x.rang}</span>${qui(x.id)}<span class="pts-med">${t[3]} <small>pts</small></span></div>
+        <div class="totaux-med">${trio(t)}</div>
+        ${lignes.length ? `<table class="detail-med"><tbody>${lignes.map(([cle, v]) => `<tr><td>${esc(COURT_ETAGE[cle] || cle)}</td><td class="num">${trio(v)}</td></tr>`).join("")}</tbody></table>` : `<div class="petit">Pas encore de médaille.</div>`}
+      </div>`;
+    }).join("")}</div></section>
   <section class="carte" data-sec="semaines"><h2>${titre("Les dernières escales", "4 dernières semaines terminées, classement à la moyenne", R.regles[1] || "", "carte")}</h2>
     <div class="grille semaines">${R.semaines.filter(s => !s.en_cours).slice(0, 4).map(s => `<div><h3>Semaine ${esc(s.libelle.replace(/^S0?/, ""))}</h3>${tableClassement(s, { colN: true, f: "0.0" })}</div>`).join("")}</div></section>
   <section class="carte" data-sec="jours" data-replie="1"><h2>${titre("Le carnet de bord", "les 4 jours d'avant", "", "jumelles")}</h2>
