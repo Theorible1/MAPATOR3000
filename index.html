@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAPATOR 3000 · Sororité vs Fraternité</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="style.css">
+<script>
+  window.THEMES_CLE = "maptap.theme";
+  window.THEMES_SANS_COMMUN = true; // page publique : pas de thème commun aux outils du PC
+</script>
+<script src="themes.js"></script>
+</head>
+<body>
+<header class="entete">
+  <div class="entete-in">
+    <a class="marque" href="#resume"><img class="logo" src="images/logo.png" alt="" width="40" height="40"><span>MapTap</span></a>
+    <nav class="menu" aria-label="Onglets">
+      <a href="#resume" data-onglet="resume">Résumé</a>
+      <a href="#joueur" data-onglet="joueur">Joueurs</a>
+      <a href="#vue" data-onglet="vue">Vue à la carte</a>
+    </nav>
+    <div class="droite"><select id="theme" class="choix-theme" aria-label="Thème d'affichage"></select></div>
+  </div>
+</header>
+<div class="titre-page"><h1 id="titre">Chargement…</h1><div class="sous" id="sous-titre"></div></div>
+<main id="contenu"></main>
+<script src="moteur.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

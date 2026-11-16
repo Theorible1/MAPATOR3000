@@ -1,0 +1,130 @@
+/* Composants de la page (contrat de THEMATOR3000). Les couleurs viennent de themes.css : aucune variable de couleur ici. */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-ink);text-decoration:none}a:hover{text-decoration:underline}
+h1{font-size:18px;margin:0;letter-spacing:-.01em}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin:0 0 12px;font-weight:650}
+h3{margin:0 0 8px;font-size:15px}
+.sous{color:var(--ink-2);font-size:12px}
+.vide{color:var(--ink-2);font-style:italic;padding:8px 0}
+.petit{font-size:12px;color:var(--ink-2)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* en-tête */
+.entete{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);
+  backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--border)}
+.entete-in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
+.marque{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:700;letter-spacing:-.01em;font-size:16px}
+.marque:hover{text-decoration:none}
+.marque img.logo{width:36px;height:36px;display:block;border-radius:9px}
+nav.menu{display:flex;gap:2px;flex-wrap:wrap}
+nav.menu a{color:var(--ink-2);padding:6px 12px;border-radius:8px;font-weight:550;cursor:pointer}
+nav.menu a:hover{background:var(--surface-2);text-decoration:none;color:var(--ink)}
+nav.menu a[aria-current="page"]{color:var(--ink);background:var(--surface-2);box-shadow:inset 0 -2px 0 var(--accent)}
+.entete .droite{margin-left:auto;display:flex;align-items:center;gap:10px}
+select.choix-theme{border-color:transparent;background:transparent;color:var(--ink-2);font-size:13px;padding:4px 8px;cursor:pointer;max-width:180px}
+select.choix-theme:hover{background:var(--surface-2);color:var(--ink)}
+.titre-page{max-width:1200px;margin:0 auto;padding:18px 16px 0}
+main{max-width:1200px;margin:0 auto;padding:16px 16px 56px;display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+
+/* cartes */
+.carte{background:var(--surface);border:1px solid var(--border);border-radius:var(--rayon);padding:16px 18px;min-width:0;box-shadow:var(--ombre)}
+.grille{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))}
+.grille.etroite{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.defil{overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px}
+.tuile-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--rayon);padding:12px 14px;box-shadow:var(--ombre);
+  display:flex;flex-direction:column;gap:4px;min-width:0}
+.tuile-kpi .lib{color:var(--ink-2);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.tuile-kpi .val{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tuile-kpi .val small{font-size:14px;font-weight:600;color:var(--ink-2);letter-spacing:0}
+.tuile-kpi .note{color:var(--ink-2);font-size:12px}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:99px;font-weight:600;white-space:nowrap;padding:1px 9px;font-size:12px}
+.neutre{color:var(--ink-2);background:var(--neutre-bg)}
+.badge.direct{background:var(--att-bg);color:var(--warn-ink)}
+.bandeau{border-radius:var(--rayon);padding:12px 16px;border:1px solid var(--border)}
+.bandeau.info{background:var(--info-bg);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.bandeau.att{background:var(--att-bg);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+
+/* duel des équipes */
+.duel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.equipe{border:1px solid var(--border);border-radius:var(--rayon);padding:12px 14px;background:var(--surface-2);min-width:0;
+  border-top:4px solid var(--eq,var(--accent))}
+.equipe h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.equipe dl{display:grid;grid-template-columns:auto auto;gap:2px 12px;margin:0;font-size:13px}
+.equipe dt{color:var(--ink-2)}.equipe dd{margin:0;text-align:right;font-weight:650;font-variant-numeric:tabular-nums}
+.equipe dd.mieux{color:var(--good-ink)}
+.score-duel{display:flex;justify-content:center;align-items:baseline;gap:14px;font-size:30px;font-weight:750;font-variant-numeric:tabular-nums;margin:6px 0 2px}
+.score-duel small{font-size:13px;font-weight:600;color:var(--ink-2)}
+
+/* tableaux */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--ink-2);font-weight:600;padding:7px 8px;border-bottom:1px solid var(--border-strong);white-space:nowrap;
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;background:var(--surface)}
+td{padding:5px 8px;border-bottom:1px solid var(--grid);vertical-align:middle}
+tbody tr:hover{background:var(--surface-2)}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.rang{width:36px;text-align:center;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+tr.hors td{color:var(--ink-2);font-style:italic}
+tr.moyenne td{color:var(--ink-2);font-style:italic;background:color-mix(in srgb,var(--surface-2) 60%,transparent)}
+.evo{font-size:12px;font-weight:650;white-space:nowrap;color:var(--ink-2);text-align:center}
+.evo.monte{color:var(--good-ink)}.evo.baisse{color:var(--crit-ink)}
+.pastille{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:0;flex:none}
+.nom{white-space:nowrap}
+.med{white-space:nowrap;font-variant-numeric:tabular-nums}
+.pied{margin-top:8px;font-size:12px;color:var(--ink-2)}
+
+/* formulaires */
+button,select,input{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;padding:6px 10px}
+button{cursor:pointer}button:hover{background:var(--surface-2)}
+.puces{display:inline-flex;gap:6px;flex-wrap:wrap}
+.puces button{border-radius:99px;padding:4px 12px}
+.puces button.on{background:var(--bouton,var(--accent));border-color:var(--bouton,var(--accent));color:var(--sur-bouton,#fff)}
+.reglages{display:grid;gap:12px}
+.ligne-reglages{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.ligne-reglages label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--ink-2);min-width:0}
+.ligne-reglages select{max-width:100%}
+.coches{display:flex;flex-wrap:wrap;gap:6px}
+.coches label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:99px;padding:3px 11px 3px 8px;cursor:pointer;font-size:13px;user-select:none}
+.coches label:has(input:checked){background:var(--surface-2);border-color:var(--border-strong)}
+.coches input{margin:0;accent-color:var(--accent);padding:0}
+.coches .pastille{margin-right:0}
+button.lien{border:none;background:none;color:var(--accent-ink);padding:2px 4px;font-size:12px}
+button.lien:hover{text-decoration:underline;background:none}
+.choix-joueur{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* graphiques (SVG dessiné par app.js) */
+.graphe{position:relative}
+.graphe svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+.graphe .grille-l{stroke:var(--grid);stroke-width:1}
+.graphe .axe{fill:var(--ink-2);font-size:11px}
+.graphe .cible{fill:transparent;cursor:crosshair}
+.graphe .repere{stroke:var(--border-strong);stroke-width:1;stroke-dasharray:3 3;display:none}
+.legende{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--ink-2);margin-top:6px}
+.legende span{display:inline-flex;align-items:center}
+.infobulle{position:absolute;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--border-strong);
+  border-radius:8px;box-shadow:var(--ombre);padding:6px 10px;font-size:12px;white-space:nowrap;display:none;z-index:5}
+.infobulle b{display:block;margin-bottom:2px}
+
+/* blocs enroulables */
+section.carte[data-sec]>h2{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
+section.carte[data-sec]>h2::before{content:"▾";font-size:16px;line-height:1;transition:transform .15s;color:var(--ink-2)}
+section.carte.replie>h2{margin-bottom:0}
+section.carte.replie>h2::before{transform:rotate(-90deg)}
+section.carte.replie>:not(h2){display:none}
+
+/* bulle « i » */
+h2 .glose,h3 .glose{text-transform:none;font-style:italic;font-weight:400;font-size:12px;letter-spacing:0;color:var(--ink-2);margin-left:4px}
+.info{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;border:1px solid var(--ink-2);color:var(--ink-2);font:italic 700 11px/1 Georgia,serif;text-transform:none;letter-spacing:0;cursor:help;position:relative;vertical-align:1px;margin-left:6px}
+.info:hover,.info:focus-visible{color:var(--ink);border-color:var(--ink)}
+.info:hover::after,.info:focus-visible::after{content:attr(data-info);position:absolute;left:-10px;top:calc(100% + 8px);width:max-content;max-width:min(340px,82vw);background:var(--surface);color:var(--ink);border:1px solid var(--border-strong);border-radius:8px;padding:9px 11px;font:400 12.5px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;text-transform:none;letter-spacing:0;text-align:left;white-space:pre-line;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:40;pointer-events:none}
+.info.vers-gauche:hover::after,.info.vers-gauche:focus-visible::after{left:auto;right:-10px}
+
+@media (max-width:700px){
+  .entete-in{padding:8px 12px}main{padding:12px 12px 40px}.titre-page{padding:14px 12px 0}
+  .entete .droite{margin-left:0}
+  .carte{padding:14px 12px}
+  td,th{padding:5px 6px}
+}
+@media (max-width:520px){.duel{grid-template-columns:minmax(0,1fr)}}
