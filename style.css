@@ -149,11 +149,12 @@ h2 img.ico{width:24px;height:24px;object-fit:contain;vertical-align:-7px;margin-
 .rang-med{min-width:1.6em;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .pts-med{margin-left:auto;font-size:20px;font-weight:750;font-variant-numeric:tabular-nums}
 .pts-med small{font-size:12px;color:var(--ink-2);font-weight:600}
-.totaux-med{display:flex;gap:14px;margin:6px 0 8px;font-size:16px;font-weight:650;font-variant-numeric:tabular-nums}
+.totaux-med{display:flex;justify-content:center;gap:18px;margin:8px 0 10px;padding:6px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:16px;font-weight:650;font-variant-numeric:tabular-nums}
 .carte-med .m{white-space:nowrap}
-table.detail-med{font-size:12px}
+table.detail-med{font-size:12px;table-layout:fixed;width:100%}
 table.detail-med td{padding:3px 4px;color:var(--ink-2)}
-table.detail-med td.num .m{margin-left:8px;color:var(--ink)}
+table.detail-med td:first-child{width:40%}
+table.detail-med td.mc{width:20%;text-align:center;white-space:nowrap;color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* bulle « i » */
 h2 .glose,h3 .glose{text-transform:none;font-style:italic;font-weight:400;font-size:12px;letter-spacing:0;color:var(--ink-2);margin-left:4px}

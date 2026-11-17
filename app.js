@@ -221,7 +221,7 @@ function vueResume() {
       const lignes = etages.map(([cle]) => [cle, R.medailles[cle][x.id] || [0, 0, 0]]).filter(([, v]) => v[0] + v[1] + v[2]);
       return `<div class="carte-med"><div class="tete-med"><span class="rang-med">${x.rang}</span>${qui(x.id)}<span class="pts-med">${t[3]} <small>pts</small></span></div>
         <div class="totaux-med">${trio(t)}</div>
-        ${lignes.length ? `<table class="detail-med"><tbody>${lignes.map(([cle, v]) => `<tr><td>${esc(COURT_ETAGE[cle] || cle)}</td><td class="num">${trio(v)}</td></tr>`).join("")}</tbody></table>` : `<div class="petit">Pas encore de médaille.</div>`}
+        ${lignes.length ? `<table class="detail-med"><tbody>${lignes.map(([cle, v]) => `<tr><td>${esc(COURT_ETAGE[cle] || cle)}</td><td class="mc">🥇&nbsp;${v[0]}</td><td class="mc">🥈&nbsp;${v[1]}</td><td class="mc">🥉&nbsp;${v[2]}</td></tr>`).join("")}</tbody></table>` : `<div class="petit">Pas encore de médaille.</div>`}
       </div>`;
     }).join("")}</div></section>
   <section class="carte" data-sec="semaines"><h2>${titre("Les dernières escales", "4 dernières semaines terminées, classement à la moyenne", R.regles[1] || "", "carte")}</h2>
