@@ -182,7 +182,7 @@ function tableClassement(ligne, { colN = false, f = "0" } = {}) {
 }
 function moyEquipes(ligne, f) {
   const e = EQUIPES.map(x => `${MV_EMOJI_EQUIPE[x] || ""} ${esc(x)} ${fmt(ligne.moy_equipes[x], f === "0" ? "0.0" : f)}`).join(" · ");
-  return `<div class="pied">${e}${ligne.gagnante ? ` · <b>gagnante : ${esc(ligne.gagnante)}</b>` : (ligne.en_cours ? "" : " · pas de gagnante")}</div>`;
+  return `<div class="pied">${e}${ligne.gagnante ? `<br><b class="gagnante">Gagnante : ${esc(ligne.gagnante)}</b>` : (ligne.en_cours ? "" : " · pas de gagnante")}</div>`;
 }
 const libEnCours = l => l.en_cours ? ` <span class="badge direct">en cours</span>` : "";
 
