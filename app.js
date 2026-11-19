@@ -382,7 +382,7 @@ function afficher() {
   else if (onglet === "joueur") {
     t.textContent = "Le passeport de chaque joueur"; c.innerHTML = vueJoueur();
     document.getElementById("choix-joueur").addEventListener("change", fiche); fiche();
-  } else { t.textContent = "Vue à la carte"; c.innerHTML = vueCarte(); brancherVue(); resultat(); }
+  } else { t.textContent = "Carte blanche"; c.innerHTML = vueCarte(); brancherVue(); resultat(); }
 }
 
 function installer(doc) {
